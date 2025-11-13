@@ -11,8 +11,9 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
+from datetime import datetime
 
 # Example schemas (replace with your own):
 
@@ -22,7 +23,7 @@ class User(BaseModel):
     Collection name: "user" (lowercase of class name)
     """
     name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
+    email: EmailStr = Field(..., description="Email address")
     address: str = Field(..., description="Address")
     age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
     is_active: bool = Field(True, description="Whether user is active")
@@ -37,6 +38,28 @@ class Product(BaseModel):
     price: float = Field(..., ge=0, description="Price in dollars")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
+
+# MindForge Studio specific schemas
+
+class ContactMessage(BaseModel):
+    """Contact messages from the website contact form
+    Collection: "contactmessage"
+    """
+    name: str = Field(..., min_length=1, max_length=120)
+    email: EmailStr
+    message: str = Field(..., min_length=1, max_length=5000)
+    source: Optional[str] = Field("website", description="Where the message came from")
+
+class ChatLog(BaseModel):
+    """Simple chat logs for the Test Zone
+    Collection: "chatlog"
+    """
+    bot: str = Field(..., description="Bot identifier, e.g., MailMate, DataBrain, AutoPitch")
+    prompt: str = Field(..., min_length=1, max_length=8000)
+    response: str = Field(..., min_length=1, max_length=20000)
+    session_id: Optional[str] = Field(None, description="Session identifier to group messages")
+    user: Optional[str] = Field(None, description="Optional user id or name")
+    timestamp: Optional[datetime] = None
 
 # Add your own schemas here:
 # --------------------------------------------------
